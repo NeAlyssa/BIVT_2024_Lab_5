@@ -375,13 +375,6 @@ public class Program
     public static void Main()
     {
         Program program = new Program();
-        
-        double[,] a = null, b = null;
-        program.Task_3_1(ref a, ref b);
-
-        program.PrintMatrix(a);
-        Console.WriteLine();
-        program.PrintMatrix(b);
          
     }
 
@@ -1184,16 +1177,56 @@ public class Program
     }
     #endregion
     #region bonus part
+
+    public delegate void MatrixConverter(double[,] matrix);
+
+    public void ToUpperTriangular(double[,] matrix) {
+        int n = matrix.GetLength(0);
+        int m = matrix.GetLength(1);
+
+        for (int j = 0; j < m; j++) {
+            for (int i = j + 1; i < n; i++) {
+                double coef = - (matrix[i, j] / matrix[j, j]);
+
+                matrix[i, j] = 0;
+
+                for (int k = j + 1; k < m; k++) {
+                    matrix[i, k] += matrix[j, k] * coef;
+                }
+            }
+        }
+    }
+
+    public void ToLowerTriangular(double[,] matrix) {
+        int n = matrix.GetLength(0);
+        int m = matrix.GetLength(1);
+
+        for (int j = m - 1; j >= 0; j--) {
+            for (int i = j - 1; i >= 0; i--) {
+                double coef = - (matrix[i, j] / matrix[j, j]);
+
+                matrix[i, j] = 0;
+                
+                for (int k = j - 1; k >= 0; k--) {
+                    matrix[i, k] += matrix[j, k] * coef;
+                }
+            }
+        }
+    }
+
+    public void ToDiagonal(double[,] matrix) {
+        ToUpperTriangular(matrix);
+        ToLowerTriangular(matrix);
+    }
     public void Task_4(double[,] matrix, int index)
     {
-        // MatrixConverter[] mc = new MatrixConverter[3]; - uncomment me
-
         // code here
+        
+        MatrixConverter[] mc = new MatrixConverter[3];
 
-        // create public delegate MatrixConverter(matrix);
-        // create and use method ToUpperTriangular(matrix);
-        // create and use method ToLowerTriangular(matrix);
-        // create and use method ToDiagonal(matrix,);
+        mc[0] = ToUpperTriangular;
+        mc[1] = ToLowerTriangular;
+        mc[2] = ToDiagonal;
 
         // end
     }
