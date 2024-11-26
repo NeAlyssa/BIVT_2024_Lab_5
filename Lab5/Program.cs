@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -374,8 +375,7 @@ public class Program
 
     public static void Main()
     {
-        Program program = new Program();
-         
+        Program program = new Program();              
     }
 
     #region Level 1
@@ -384,7 +384,7 @@ public class Program
         long answer = 0;
 
         // code here
-        if (n < k || k < 0)
+        if (n < k || k < 0 || n < 0)
             return 0;
 
         answer = Factorial(n) / (Factorial(k) * Factorial(n - k));
@@ -1222,11 +1222,9 @@ public class Program
     {
         // code here
         
-        MatrixConverter[] mc = new MatrixConverter[3];
+        MatrixConverter[] mc = {ToUpperTriangular, ToLowerTriangular, ToDiagonal};
 
-        mc[0] = ToUpperTriangular;
-        mc[1] = ToLowerTriangular;
-        mc[2] = ToDiagonal;
+        mc[index](matrix);
 
         // end
     }
