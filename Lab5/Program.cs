@@ -1214,18 +1214,24 @@ public class Program
         }
     }
 
-    public void ToDiagonal(double[,] matrix) {
+    public void ToLeftDiagonal(double[,] matrix) {
         ToUpperTriangular(matrix);
         ToLowerTriangular(matrix);
     }
-    public void Task_4(double[,] matrix, int index)
+
+    public void ToRightDiagonal(double[,] matrix) {
+        ToLowerTriangular(matrix);
+        ToUpperTriangular(matrix);
+    }
+    public double[,] Task_4(double[,] matrix, int index)
     {
         // code here
         
-        MatrixConverter[] mc = {ToUpperTriangular, ToLowerTriangular, ToDiagonal};
+        MatrixConverter[] mc = {ToUpperTriangular, ToLowerTriangular, ToLeftDiagonal, ToRightDiagonal};
 
         mc[index](matrix);
 
+        return matrix;
         // end
     }
     #endregion
