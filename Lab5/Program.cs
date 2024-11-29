@@ -55,7 +55,7 @@ public class Program
         return answer;
     }
     
-    public bool triangleExists(double a, double b, double c) {
+    public bool TriangleExists(double a, double b, double c) {
         return (a < b + c) && (b < a + c) && (c < a + b);
     }
     public double GeronArea(double a, double b, double c) {
@@ -73,7 +73,7 @@ public class Program
         double a1 = first[0], b1 = first[1], c1 = first[2];
         double a2 = second[0], b2 = second[1], c2 = second[2];
         
-        if (!triangleExists(a1, b1, c1) || !triangleExists(a2, b2, c2))
+        if (!TriangleExists(a1, b1, c1) || !TriangleExists(a2, b2, c2))
             return -1;
 
         double firstArea = GeronArea(a1, b1, c1);
