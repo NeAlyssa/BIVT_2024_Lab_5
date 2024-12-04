@@ -8,7 +8,37 @@ using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class Program
-{
+{//
+    public int Factorial(int n){
+
+        int answer = 1;
+        for(int i = 1; i <= n; i++){
+            answer *= i;
+        }
+
+        return answer;
+    }
+
+    public double GeronArea(double a, double b, double c){
+
+        double p = (a+b+c)/2;
+        double s = Math.Sqrt(p*(p-a)*(p-b)*(p-c));
+
+        return s;
+    }
+
+    public bool istriangle(double a, double b, double c){
+        bool f = false;
+        if (a+b > c && b+c > a && a+c > b){
+            f = true;
+        }
+        return f;
+    }
+
+    public double GetDistance(double v, double a, int t){
+        return v*t+a*t*t/2;
+    }
+
     public static void Main()
     {
         Program program = new Program();
@@ -18,25 +48,28 @@ public class Program
     {
         long answer = 0;
 
-        // code here
-
-        // create and use Combinations(n, k);
-        // create and use Factorial(n);
-
-        // end
+        answer = Factorial(n)/(Factorial(k)*Factorial(n-k));
 
         return answer;
     }
 
     public int Task_1_2(double[] first, double[] second)
     {
-        int answer = 0;
+        int answer = 1;
+        double s1 = 0,s2 = 0;
+        
+        s1 = GeronArea(first[0], first[1], first[2]);
+        s2 = GeronArea(second[0], second[1], second[2]);
 
-        // code here
-
-        // create and use GeronArea(a, b, c);
-
-        // end
+        if (!istriangle(first[0], first[1], first[2]) || !istriangle(second[0], second[1], second[2])){
+            answer = -1;
+        }
+        else if (s2 > s1){
+            answer = 2;
+        }
+        else if (s2 == s1){
+            answer = 0;
+        }
 
         // first = 1, second = 2, equal = 0, error = -1
         return answer;
@@ -44,13 +77,15 @@ public class Program
 
     public int Task_1_3a(double v1, double a1, double v2, double a2, int time)
     {
-        int answer = 0;
+        int answer = 1;
+        double s1 = GetDistance(v1,a1,time), s2 = GetDistance(v2,a2,time);
 
-        // code here
-
-        // create and use GetDistance(v, a, t); t - hours
-
-        // end
+        if (s2 > s1){
+            answer = 2;
+        }
+        else if (s2 == s1){
+            answer = 0;
+        }
 
         // first = 1, second = 2, equal = 0
         return answer;
@@ -58,15 +93,13 @@ public class Program
 
     public int Task_1_3b(double v1, double a1, double v2, double a2)
     {
-        int answer = 0;
+        int time = 1;
 
-        // code here
+        while (GetDistance(v1,a1,time) > GetDistance(v2,a2,time)){
+            time++;
+        }
 
-        // use GetDistance(v, a, t); t - hours
-
-        // end
-
-        return answer;
+        return time;
     }
     #endregion
 
