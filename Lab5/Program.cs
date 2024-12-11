@@ -861,7 +861,7 @@ public int CountNegativeInRow(int[,] A, int row){
         int cnt = 0;
         for (double x = a + h; x <= b; x += h) {
             double prev = yFunction(x - h), cur = yFunction(x);
-            if ((prev >= 0 && cur < 0) || (prev <= 0 && cur > 0) || (x == b && cur == 0))
+            if ((prev > 0 && cur < 0) || (prev < 0 && cur > 0) || (x == b))
                 cnt++;
         }
 
@@ -1036,7 +1036,7 @@ public int CountNegativeInRow(int[,] A, int row){
             for (int i = j + 1; i < A.GetLength(0); i++) {
                 double k = - (A[i, j] / A[j, j]);
                 A[i, j] = 0;
-                for (int z = j + 1; k < A.GetLength(1); k++) {A[i, z] += A[j, z] * k;}
+                for (int z = j + 1; z < A.GetLength(1); z++) {A[i, z] += A[j, z] * k;}
             }
         }
     }
@@ -1046,7 +1046,7 @@ public int CountNegativeInRow(int[,] A, int row){
             for (int i = j - 1; i >= 0; i--) {
                 double k = - (A[i, j] / A[j, j]);
                 A[i, j] = 0;
-                for (int z = j - 1; k >= 0; k--) {A[i, z] += A[j, z] * k;}
+                for (int z = j - 1; z >= 0; z--) {A[i, z] += A[j, z] * k;}
             }
         }
     }
