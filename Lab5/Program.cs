@@ -27,11 +27,13 @@ public class Program
     }
 
 
+    
     public static void Main()
     {
-        Program program = new Program();              
+        Program program = new Program();   
     }
 
+    
     public int Factorial(int n) {
         int result = 1;
         for (int i = 2; i <= n; i++) {
@@ -460,12 +462,13 @@ public class Program
         FindMax(matrix, out matrixMaxI, out matrixMaxJ);
         FindMin(matrix, out matrixMinI, out matrixMinJ);
 
-        RemoveRow(ref matrix, matrixMaxI);
+        int firstRow = Math.Min(matrixMinI, matrixMaxI);
+        int secondRow = Math.Max(matrixMinI, matrixMaxI);
 
-        if (matrixMinI < matrixMaxI)
-            RemoveRow(ref matrix, matrixMinI);
-        else if (matrixMinI > matrixMaxI)
-            RemoveRow(ref matrix, matrixMinI - 1);
+        RemoveRow(ref matrix, secondRow);
+
+        if (firstRow != secondRow)
+            RemoveRow(ref matrix, firstRow);
         // end
     }
     
