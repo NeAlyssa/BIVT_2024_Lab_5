@@ -19,10 +19,23 @@ public class Program
         long answer = 0;
 
         // code here
+        long factorial(long n)
+        {
+            int answer = 1;
+            for (int i = 1; i<=n; i++)
+            {
+                answer *= i;
+            }
+            return answer;
+        }
+        long Combinations(long n, long k)
+        {
+            return (factorial(n)) / (factorial(n - k) * factorial(k));
+        }
 
         // create and use Combinations(n, k);
         // create and use Factorial(n);
-
+        answer = Combinations(n, k);
         // end
 
         return answer;
@@ -33,9 +46,29 @@ public class Program
         int answer = 0;
 
         // code here
-
         // create and use GeronArea(a, b, c);
-
+        double GeronArea(double a, double b, double c)
+        {
+            double p = a + b + c; p /= 2;
+            return Math.Sqrt(p * (p - a) * (p - b) * (p - c));
+        }
+        bool Tringle(double a, double b, double c)
+        {
+            if (a+b<=c || a+c <=b || b+c <= a)
+            {
+                return false;
+            }
+            return true;
+        }
+        if (first == null || second == null || first.Length != 3 || second.Length != 3)
+        {
+            return -1;
+        }
+        if (!Tringle(first[0], first[1], first[2]) || !Tringle(second[0], second[1], second[2])) return -1;
+        double ar1 = GeronArea(first[0], first[1], first[2]), ar2 = GeronArea(second[0], second[1], second[2]);
+        if (ar1 == ar2) return 0;
+        if (ar1 < ar2) return 2;
+        else return 1;
         // end
 
         // first = 1, second = 2, equal = 0, error = -1
@@ -49,7 +82,14 @@ public class Program
         // code here
 
         // create and use GetDistance(v, a, t); t - hours
-
+        double GetDistance(double v, double a, double t)
+        {
+            return v * t + (a * t * t) / 2;
+        }
+        double d1 = GetDistance(v1, a1, time), d2 = GetDistance(v2,a2,time);
+        if (d1 == d2) return 0;
+        if (d1 < d2) return 2;
+        else return 1;
         // end
 
         // first = 1, second = 2, equal = 0
@@ -63,6 +103,15 @@ public class Program
         // code here
 
         // use GetDistance(v, a, t); t - hours
+        double GetDistance(double v, double a, double t)
+        {
+            return v * t + (a * t * t) / 2;
+        }
+        for (int time = 1; ; time++)
+        {
+            double d1 = GetDistance(v1, a1, time), d2 = GetDistance(v2, a2, time);
+            if (d1 <= d2) return time;
+        }
 
         // end
 
