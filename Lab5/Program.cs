@@ -1,9 +1,12 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Numerics;
 using System.Reflection;
 using System.Reflection.Metadata;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -12,7 +15,28 @@ public class Program
     public static void Main()
     {
         Program program = new Program();
+        int[,] matrix5x5 = new int[,] {
+            { 1, 2, 3, 4, 5 },
+            { 6, 7, 8, 9, 10 },
+            { 11, 12, 13, 14, 15 },
+            { -1, -2, -3, -4, -5 },
+            { 6, 7, 8, 9, 0 }};
+        program.Task_2_10(ref matrix5x5);
     }
+
+    void printM(int[,] m)
+    {
+        for (int i =0; i<m.GetLength(0); i++)
+        {
+            for (int j = 0; j<m.GetLength(1); j++)
+            {
+                Console.Write("{0:d} ", m[i, j]);
+            }
+            Console.WriteLine();
+        }
+        Console.WriteLine();
+    }
+
     #region Level 1
     public long Task_1_1(int n, int k)
     {
@@ -134,6 +158,41 @@ public class Program
         // code here
 
         // create and use FindMaxIndex(array);
+        int FindMax(double[] arr)
+        {
+            double mx = -1e18; int pos = 0;
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (mx < arr[i])
+                {
+                    mx = arr[i]; pos = i;
+                }
+            }
+            return pos;
+        }
+
+        int p1 = FindMax(A), p2 = FindMax(B);
+        if (p1 < p2)
+        {
+            double sum = 0;
+            for (int i = p1+1; i<A.Length; i++)
+            {
+                sum += A[i];
+            }
+            sum /= (A.Length - (p1 + 1));
+            A[p1] = sum;
+        }
+        else
+        {
+            double sum = 0;
+            for (int i = p2 + 1; i < B.Length; i++)
+            {
+                sum += B[i];
+            }
+            sum /= (B.Length - (p2 + 1));
+            B[p2] = sum;
+        }
+
         // only 1 array has to be changed!
 
         // end
@@ -153,7 +212,24 @@ public class Program
         // code here
 
         //  create and use method FindDiagonalMaxIndex(matrix); like in Task_2_3
+        (int, int) FindDiagonalMaxIndex(int[,] matrix)
+        {
+            int mx = -1000000000, row = 0, col = 0;
+            for (int i = 0; i<matrix.GetLength(0) && i<matrix.GetLength(1); i++)
+            {
+                if (matrix[i, i] > mx)
+                {
+                    mx = matrix[i, i]; row = i; col = i;
+                }
+            }
+            return (row, col);
+        }
 
+        int row1, col1, row2, col2; (row1, col1) = FindDiagonalMaxIndex(A); (row2, col2) = FindDiagonalMaxIndex(B);
+        for (int i =0; i<A.GetLength(1); i++)
+        {
+            (A[row1, i], B[i, col2]) = (B[i, col2],  A[row1, i]);
+        }
         // end
     }
 
@@ -172,6 +248,50 @@ public class Program
 
         // create and use FindMax(matrix, out row, out column); like in Task_2_1
         // create and use DeleteElement(array, index);
+        int FindMax(int[] A)
+        {
+            int mx = -1000000, pos = 0;
+            for (int i =0; i<A.Length; i++)
+            {
+                if (A[i] > mx)
+                {
+                    mx = A[i]; pos = i;
+                }
+            }
+            return pos;
+        }
+        int pos1 = FindMax(A), pos2 = FindMax(B);
+        void Delete(ref int[] A, int pos)
+        {
+            int[] Ad = new int[A.Length - 1];
+            for (int i = 0; i < A.Length; i++)
+            {
+                if (i > pos)
+                {
+                    Ad[i - 1] = A[i];
+                }
+                else if (i == pos)
+                {
+                    continue;
+                }
+                else { Ad[i] = A[i]; }
+            }
+            A = Ad;
+        }
+        Delete(ref A, pos1); Delete(ref B, pos2);
+        int[] F = new int[A.Length + B.Length];
+        for (int i =0; i<F.Length; i++)
+        {
+            if (i < A.Length)
+            {
+                F[i] = A[i];
+            }
+            else
+            {
+                F[i] = B[i - A.Length];
+            }
+        }
+        A = F;
 
         // end
     }
@@ -191,6 +311,34 @@ public class Program
         // code here
 
         // create and use SortArrayPart(array, startIndex);
+        void SortArrayPart(int[] A, int l, int r, bool flag)
+        {
+            double cmp = 1; if (flag) cmp = -1;
+            for (int i = l; i < r; i++)
+            {
+                for (int j = l + 1; j < r - (i - l); j++)
+                {
+                    if (A[j - 1] * cmp > A[j] * cmp)
+                    {
+                        (A[j], A[j - 1]) = (A[j - 1], A[j]);
+                    }
+                }
+            }
+        }
+        int FindMax(int[] A)
+        {
+            int mx = -1000000, pos = 0;
+            for (int i = 0; i < A.Length; i++)
+            {
+                if (A[i] > mx)
+                {
+                    mx = A[i]; pos = i;
+                }
+            }
+            return pos;
+        }
+        int pos1 = FindMax(A), pos2 = FindMax(B);
+        SortArrayPart(A, pos1 + 1, A.Length, false); SortArrayPart(B, pos2 + 1, B.Length, false); 
 
         // end
     }
@@ -213,7 +361,65 @@ public class Program
         // code here
 
         // create and use RemoveColumn(matrix, columnIndex);
-
+        printM(matrix);
+        (int, int) FindDiagonalMaxIndex(int[,] matrix)
+        {
+            int mx = -1000000000, row = 0, col = 0;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j<=i; j++)
+                {
+                    if (matrix[i, j] > mx)
+                    {
+                        mx = matrix[i, j]; row = i; col = j;
+                    }
+                }
+            }
+            return (row, col);
+        }
+        (int, int) FindDiagonalMinIndex(int[,] matrix)
+        {
+            int mx = -1000000000, row = 0, col = 0;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = i + 1; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] > mx)
+                    {
+                        mx = matrix[i, j]; row = i; col = j;
+                    }
+                }
+            }
+            return (row, col);
+        }
+        void RemoveColumn(ref int[,] matrix, int columnIndex)
+        {
+            int[,] mat = new int[matrix.GetLength(0), matrix.GetLength(1) - 1];
+            for (int i =0; i<matrix.GetLength(0); i++)
+            {
+                for (int j =0; j < matrix.GetLength(1); j++)
+                {
+                    if (j == columnIndex) continue;
+                    if (j > columnIndex)
+                    {
+                        mat[i,j-1] = matrix[i,j];
+                    }
+                    else
+                    {
+                        mat[i,j] = matrix[i,j];
+                    }
+                }
+            }
+            matrix = mat;
+        }
+        int row1,col1,row2,col2;
+        (row1,col1) = FindDiagonalMaxIndex(matrix); (row2,col2) = FindDiagonalMinIndex(matrix);
+        if (col1 > col2)
+        {
+            (col1, col2) = (col2, col1);
+        }
+        RemoveColumn(ref matrix, col1); if (col1!=col2) RemoveColumn(ref matrix, col2 - 1);
+        printM(matrix);
         // end
     }
 
@@ -230,7 +436,27 @@ public class Program
         // code here
 
         // create and use FindMaxColumnIndex(matrix);
-
+        (int, int) FindMaxIndex(int[,] matrix)
+        {
+            int mx = -1000000000, row = 0, col = 0;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] > mx)
+                    {
+                        mx = matrix[i, j]; row = i; col = j;
+                    }
+                }
+            }
+            return (row, col);
+        }
+        int row1, col1, row2, col2;
+        (row1, col1) = FindMaxIndex(A); (row2, col2) = FindMaxIndex(B);
+        for (int i =0; i<A.GetLength(0); i++)
+        {
+            (A[i, col1], B[i, col2]) = (B[i, col2], A[i, col1]);
+        }
         // end
     }
 
@@ -248,6 +474,23 @@ public class Program
         // code here
 
         // create and use SortRow(matrix, rowIndex);
+        void sortRow(int[,] matrix, int ind)
+        {
+            for (int i = 0; i<matrix.GetLength(1); i++)
+            {
+                for (int j = 1; j<matrix.GetLength(1) - i; j++)
+                {
+                    if (matrix[ind,j] < matrix[ind, j - 1])
+                    {
+                        (matrix[ind, j], matrix[ind, j - 1]) = (matrix[ind, j - 1], matrix[ind, j]);
+                    }
+                }
+            }
+        }
+        for (int i =0; i<matrix.GetLength(0); i++)
+        {
+            sortRow(matrix, i);
+        }
 
         // end
     }
@@ -271,7 +514,37 @@ public class Program
         // code here
 
         // create and use SortNegative(array);
-
+        void SortNegative(int[] A)
+        {
+            for (int i = 0; i < A.Length; i++)
+            {
+                int prev = -1;
+                for (int j = 1; j < A.Length; j++)
+                {
+                    if (A[j] >= 0) continue;
+                    else if (prev==-1)
+                    {
+                        prev = j;
+                    }
+                    if (A[j] > A[prev] && A[j] < 0) 
+                    {
+                        (A[j], A[prev]) = (A[prev], A[j]);
+                    }
+                    if (A[j] < 0) prev = j;
+                }
+            }
+        }
+        for (int i = 0; i < A.Length; i++)
+        {
+            Console.Write("{0:d} ", A[i]);
+        }
+        Console.WriteLine();
+        SortNegative(A); SortNegative(B);
+        for (int i = 0; i < A.Length; i++)
+        {
+            Console.Write("{0:d} ", A[i]);
+        }
+        Console.WriteLine();
         // end
     }
 
@@ -289,7 +562,20 @@ public class Program
         // code here
 
         // create and use SortDiagonal(matrix);
-
+        void sortDiag(int[,] matrix)
+        {
+            for (int i = 0; i < matrix.GetLength(0) && i<matrix.GetLength(1); i++)
+            {
+                for (int j = 1; j < matrix.GetLength(0) && j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[j, j] < matrix[j - 1, j - 1])
+                    {
+                        (matrix[j, j], matrix[j - 1, j - 1]) = (matrix[j - 1, j - 1], matrix[j, j]);
+                    }
+                }
+            }
+        }
+        sortDiag(A); sortDiag(B);
         // end
     }
 
@@ -306,7 +592,58 @@ public class Program
         // code here
 
         // use RemoveColumn(matrix, columnIndex); from 2_10
-
+        void RemoveColumn(ref int[,] matrix, int columnIndex)
+        {
+            int[,] mat = new int[matrix.GetLength(0), matrix.GetLength(1) - 1];
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    if (j == columnIndex) continue;
+                    if (j > columnIndex)
+                    {
+                        mat[i, j - 1] = matrix[i, j];
+                    }
+                    else
+                    {
+                        mat[i, j] = matrix[i, j];
+                    }
+                }
+            }
+            matrix = mat;
+        }
+        printM(A);
+        for (int i = 0; i<A.GetLength(1); i++)
+        {
+            int cnt = 0;
+            for (int j =0;  j < A.GetLength(0); j++)
+            {
+                if (A[j,i]==0)
+                {
+                    cnt++; break;
+                }
+            }
+            if (cnt == 0)
+            {
+                RemoveColumn(ref A, i); i--;
+            }
+        }
+        printM(A);
+        for (int i = 0; i < B.GetLength(1); i++)
+        {
+            int cnt = 0;
+            for (int j = 0; j < B.GetLength(0); j++)
+            {
+                if (B[j, i] == 0)
+                {
+                    cnt++; break;
+                }
+            }
+            if (cnt == 0)
+            {
+                RemoveColumn(ref B, i); i--;
+            }
+        }
         // end
     }
 
@@ -324,14 +661,45 @@ public class Program
 
     public void Task_2_22(int[,] matrix, out int[] rows, out int[] cols)
     {
-        rows = null;
-        cols = null;
+        rows = new int[matrix.GetLength(0)];
+        cols = new int[matrix.GetLength(1)];
 
         // code here
 
         // create and use CountNegativeInRow(matrix, rowIndex);
         // create and use FindMaxNegativePerColumn(matrix);
-
+        int CountNegativeInRow(int[,] matrix, int rowIndex)
+        {
+            int cnt = 0;
+            for (int i =0; i< matrix.GetLength(1); i++)
+            {
+                if (matrix[rowIndex, i] < 0)
+                {
+                    cnt++;
+                }
+            }
+            return cnt;
+        }
+        int FindMaxNegativePerColumn(int[,] matrix, int colIndex)
+        {
+            int mx = -1000000000;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                if (mx < matrix[i,colIndex] && matrix[i, colIndex] < 0)
+                {
+                    mx = matrix[i,colIndex];
+                }
+            }
+            return mx;
+        }
+        for (int i =0; i<matrix.GetLength(0); i++)
+        {
+            rows[i] = CountNegativeInRow(matrix, i);
+        }
+        for (int i = 0; i < matrix.GetLength(1); i++)
+        {
+            cols[i] = FindMaxNegativePerColumn(matrix, i);
+        }
         // end
     }
 
@@ -350,7 +718,32 @@ public class Program
 
         // use FindMaxIndex(matrix, out row, out column); like in 2_1
         // create and use SwapColumnDiagonal(matrix, columnIndex);
+        (int, int) FindMaxIndex(int[,] matrix)
+        {
+            int mx = -1000000000, row = 0, col = 0;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] > mx)
+                    {
+                        mx = matrix[i, j]; row = i; col = j;
+                    }
+                }
+            }
+            return (row, col);
+        }
+        void Swap(int[,] matrix, int col)
+        {
+            for (int i =0; i<matrix.GetLength(0); i++)
+            {
+                (matrix[i, i], matrix[i, col]) = (matrix[i, col], matrix[i, i]);
+            }
+        }
+        int row1, col1, row2, col2;
+        (row1, col1) = FindMaxIndex(A); (row2, col2) = FindMaxIndex(B);
 
+        Swap(A, col1); Swap(B, col2);
         // end
     }
 
@@ -373,7 +766,36 @@ public class Program
 
         // create and use FindRowWithMaxNegativeCount(matrix); like in 2_25
         // in FindRowWithMaxNegativeCount use CountNegativeInRow(matrix, rowIndex); from 2_22
-
+        int CountNegativeInRow(int[,] matrix, int rowIndex)
+        {
+            int cnt = 0;
+            for (int i = 0; i < matrix.GetLength(1); i++)
+            {
+                if (matrix[rowIndex, i] < 0)
+                {
+                    cnt++;
+                }
+            }
+            return cnt;
+        }
+        int FindRowWithMaxNegativeCount(int[,] a)
+        {
+            int mx = -10000, pos = 0;
+            for (int i = 0; i<a.GetLength(0); i++)
+            {
+                int now = CountNegativeInRow(a, i);
+                if (mx < now)
+                {
+                    mx = now; pos = i;
+                }
+            }
+            return pos;
+        }
+        int row1 = FindRowWithMaxNegativeCount(A), row2 = FindRowWithMaxNegativeCount(B);
+        for (int i =0; i<A.GetLength(1); i++)
+        {
+            (A[row1, i], B[row2, i]) = (B[row2, i], A[row1, i]);
+        }
         // end
     }
 
