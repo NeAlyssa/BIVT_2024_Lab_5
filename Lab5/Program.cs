@@ -1125,11 +1125,13 @@ public class Program
     public int CountSignFlips(YFunction yFunction, double a, double b, double h)
     {
         int cnt = 0;
+        double prev = yFunction(a);
         for (double x = a + h; x <= b; x += h)
         {
-            double prev = yFunction(x - h), cur = yFunction(x);
-            if ((prev >= 0 && cur < 0) || (prev <= 0 && cur > 0) || (x == b && cur == 0))
+            double cur = yFunction(x);
+            if ((prev > 0 && cur < 0) || (prev < 0 && cur > 0) || (x == b))
                 cnt++;
+            prev = cur;
         }
 
         return cnt;
