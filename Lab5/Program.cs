@@ -861,37 +861,27 @@ public class Program
         // end
     }
 
-    public int FindSequence(int[] array, int A, int B){
-        bool flag = true;
-        for (int i = A; i < (B-1); i++){
-            if (array[i] < array[i+1]){
-                flag = false;
-                break;
+    int FindSequence(int[]array, int A, int B)
+    {
+
+        bool check = array[A] < array[A + 1];
+        for (int i = A; i < B; i++)
+        {
+            if (check && array[i] > array[i + 1] || !check && array[i] < array[i + 1]) {
+                return 0;
             }
         }
-        if (flag == true){
-            return -1;
-        }
-        flag = true;
-        for (int i = A; i < (B-1); i++){
-            if (array[i] > array[i+1]){
-                flag = false;
-                break;
-            }
-        }
-        if (flag == true){
+        if (check){
             return 1;
         }
-        else{
-            return 0;
-        }
+        return -1;
     }
 
     public void Task_2_28a(int[] first, int[] second, ref int answerFirst, ref int answerSecond)
     {
         // code here
         answerFirst = FindSequence(first, 0, first.Length-1);
-        answerSecond = FindSequence(second, 0, second.Length);
+        answerSecond = FindSequence(second, 0, second.Length-1);
         // create and use FindSequence(array, A, B); // 1 - increasing, 0 - no sequence,  -1 - decreasing
         // A and B - start and end indexes of elements from array for search
 
@@ -901,17 +891,92 @@ public class Program
     public void Task_2_28b(int[] first, int[] second, ref int[,] answerFirst, ref int[,] answerSecond)
     {
         // code here
+        int cnt = 0;
+        for (int i = 0; i < first.Length; i++)
+        {
+            for (int j = i + 1; j < first.Length; j++)
+            {
+                int seq = FindSequence(first, i, j);
+                if (seq != 0) cnt++;
+            }
+        }
+        answerFirst = new int[cnt, 2];
+        cnt = 0;
+        for (int i = 0; i < first.Length; i++)
+        {
+            for (int j = i + 1; j < first.Length; j++)
+            {
+                int seq = FindSequence(first, i, j);
+                if (seq != 0)
+                {
+                    answerFirst[cnt, 0] = i;
+                    answerFirst[cnt, 1] = j;
+                    cnt++;
+                }
+            }
+        }
 
+        cnt = 0;
+        for (int i = 0; i < second.Length; i++)
+        {
+            for (int j = i + 1; j < second.Length; j++)
+            {
+                int seq = FindSequence(second, i, j);
+                if (seq != 0) cnt++;
+            }
+        }
+        answerSecond = new int[cnt, 2];
+        cnt = 0;
+        for (int i = 0; i < second.Length; i++)
+        {
+            for (int j = i + 1; j < second.Length; j++)
+            {
+                int seq = FindSequence(second, i, j);
+                if (seq != 0)
+                {
+                    answerSecond[cnt, 0] = i;
+                    answerSecond[cnt, 1] = j;
+                    cnt++;
+                }
+            }
+        }
         // use FindSequence(array, A, B); from Task_2_28a or entirely Task_2_28a
         // A and B - start and end indexes of elements from array for search
 
         // end
     }
-
-    public void Task_2_28c(int[] first, int[] second, ref int[] answerFirst, ref int[] answerSecond)
+public void Task_2_28c(int[] first, int[] second, ref int[] answerFirst, ref int[] answerSecond)
     {
         // code here
+        int a = 0, b = 0;
+        for (int i = 0; i < first.Length; i++)
+        {
+            for (int j = i + 1; j < first.Length; j++)
+            {
+                int seq = FindSequence(first, i, j);
+                if (seq != 0 && b - a < j - i)
+                {
+                    a = i;
+                    b = j;
+                }
+            }
+        }
+        answerFirst = new int[] { a, b };
 
+        a = 0; b = 0;
+        for (int i = 0; i < second.Length; i++)
+        {
+            for (int j = i + 1; j < second.Length; j++)
+            {
+                int seq = FindSequence(second, i, j);
+                if (seq != 0 && b - a < j - i)
+                {
+                    a = i;
+                    b = j;
+                }
+            }
+        }
+        answerSecond = new int[] { a, b };
         // use FindSequence(array, A, B); from Task_2_28a or entirely Task_2_28a or Task_2_28b
         // A and B - start and end indexes of elements from array for search
 
@@ -1254,67 +1319,67 @@ public class Program
         // end
     }
 
-    public delegate int IsSequence(int[] array, int left, int right);
-
-    public int FindIncreasingSequence(int[] array, int A, int B){
-        bool flag = true;
-        for (int i = A; i < (B-1); i++){
-            if (array[i] > array[i+1]){
-                flag = false;
-                return 0;
-            }
-        }
-        return 1;
+    public delegate bool IsSequence(int[] array, int left, int right);
+    public bool FindIncreasingSequence(int[] array, int A, int B)
+    {
+        return FindSequence(array, A, B) == 1;
     }
-
-    public int FindDecreasingSequence(int[] array, int A, int B){
-        bool flag = true;
-        for (int i = A; i < (B-1); i++){
-            if (array[i] < array[i+1]){
-                flag = false;
-                return 0;
-            }
-        }
-        return 1;
+    public bool FindDecreasingSequence(int[] array, int A, int B)
+    {
+        return FindSequence(array, A, B) == -1;
     }
-
-    public int DefineSequence(int [] array, int A, int B){
-        IsSequence check = FindIncreasingSequence;
-        if (check(array, A, B) == 1){
+    public int DefineSequence(int[] array, IsSequence findIncreasingSequence, IsSequence findDecreasingSequence)
+    {
+        if (findIncreasingSequence(array, 0, array.Length - 1)) {
             return 1;
         }
-        check = FindDecreasingSequence;
-        if (check(array, A, B) == 1){
+        if (findDecreasingSequence(array, 0, array.Length - 1)) {
             return -1;
         }
-        else{
-            return 0;
-        }
+        return 0;
     }
 
     public void Task_3_28a(int[] first, int[] second, ref int answerFirst, ref int answerSecond)
     {
         // code here
-        answerFirst = DefineSequence(first, 0, first.Length-1);
-        answerSecond = DefineSequence(second, 0, second.Length-1);
+
         // create public delegate IsSequence(array, left, right);
         // create and use method FindIncreasingSequence(array, A, B); similar to FindSequence(array, A, B) in Task_2_28a
         // create and use method FindDecreasingSequence(array, A, B); similar to FindSequence(array, A, B) in Task_2_28a
         // create and use method DefineSequence(array, findIncreasingSequence, findDecreasingSequence);
 
         // end
+        answerFirst = DefineSequence(first, FindIncreasingSequence, FindDecreasingSequence);
+        answerSecond = DefineSequence(second, FindIncreasingSequence, FindDecreasingSequence);
+    }
+    
+int[] FindLongestSequence(int[] array, IsSequence sequence)
+    {
+        int start = 0, end = 0;
+        for (int i = 0; i < array.Length; i++)
+            for (int j = i + 1; j < array.Length; j++)
+                if (sequence(array, i, j) == true && (j - i > end - start))
+                {
+                    start = i; end = j;
+                }
+        return [start, end];
     }
 
     public void Task_3_28c(int[] first, int[] second, ref int[] answerFirstIncrease, ref int[] answerFirstDecrease, ref int[] answerSecondIncrease, ref int[] answerSecondDecrease)
     {
         // code here
 
+        answerFirstIncrease = FindLongestSequence(first, FindIncreasingSequence);
+        answerFirstDecrease = FindLongestSequence(first, FindDecreasingSequence);
+        answerSecondIncrease = FindLongestSequence(second, FindIncreasingSequence);
+        answerSecondDecrease = FindLongestSequence(second, FindDecreasingSequence);
+
         // create public delegate IsSequence(array, left, right);
         // use method FindIncreasingSequence(array, A, B); from Task_3_28a
         // use method FindDecreasingSequence(array, A, B); from Task_3_28a
         // create and use method FindLongestSequence(array, sequence);
 
-        // end
+        // end    
     }
     #endregion
     #region bonus part
@@ -1336,3 +1401,61 @@ public class Program
     }
     #endregion
 }
+
+
+
+    // public delegate bool IsSequence(int[] array, int left, int right);
+    // bool FindIncreasingSequence(int[] array, int A, int B)
+    // {
+    //     return FindSequence(array, A, B) == 1;
+    // }
+    // bool FindDecreasingSequence(int[] array, int A, int B)
+    // {
+    //     return FindSequence(array, A, B) == -1;
+    // }
+    // int DefineSequence(int[] array, IsSequence findIncreasingSequence, IsSequence findDecreasingSequence)
+    // {
+    //     if (findIncreasingSequence(array, 0, array.Length - 1)) return 1;
+    //     if (findDecreasingSequence(array, 0, array.Length - 1)) return -1;
+    //     return 0;
+    // }
+
+    //-----------------------------------------
+
+    // public delegate int IsSequence(int[] array, int left, int right);
+
+    // public int FindIncreasingSequence(int[] array, int A, int B){
+    //     bool flag = true;
+    //     for (int i = A; i < (B-1); i++){
+    //         if (array[i] > array[i+1]){
+    //             flag = false;
+    //             return 0;
+    //         }
+    //     }
+    //     return 1;
+    // }
+
+    // public int FindDecreasingSequence(int[] array, int A, int B){
+    //     bool flag = true;
+    //     for (int i = A; i < (B-1); i++){
+    //         if (array[i] < array[i+1]){
+    //             flag = false;
+    //             return 0;
+    //         }
+    //     }
+    //     return 1;
+    // }
+
+    // public int DefineSequence(int [] array, int A, int B){
+    //     IsSequence check = FindIncreasingSequence;
+    //     if (check(array, A, B) == 1){
+    //         return 1;
+    //     }
+    //     check = FindDecreasingSequence;
+    //     if (check(array, A, B) == 1){
+    //         return -1;
+    //     }
+    //     else{
+    //         return 0;
+    //     }
+    // }
