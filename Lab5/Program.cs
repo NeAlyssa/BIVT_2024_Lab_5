@@ -370,46 +370,47 @@ public class Program
     public void Task_2_10(ref int[,] matrix)
     {
         // code here
-        int max = 0;
-        int maxE = int.MinValue;
-        int minE = int.MaxValue;
-        int min = 0;
-        PrintMatrix(matrix);
-        Console.WriteLine();
-        Console.WriteLine(FindMaxColumnIndex(matrix));
-        // create and use RemoveColumn(matrix, columnIndex);
-        for(int i = 0; i<matrix.GetLength(0); i++)
+        int maxi = 0, maxj = 0;
+        int mini = 0, minj = 1;
+        for (int i = 0; i < matrix.GetLength(0); i++)
         {
-            for (int j = 0; j<matrix.GetLength(1); j++)
+            for (int j = 0; j < matrix.GetLength(1); j++)
             {
-                if (j <= i && matrix[i, j] > maxE)
+                if (i >= j && matrix[i, j] > matrix[maxi, maxj])
                 {
-                    maxE = matrix[i, j];
-                    max = j;
+                    maxi = i;
+                    maxj = j;
                 }
-                if (j > i && matrix[i, j] < minE)
+                if (i < j && matrix[i, j] < matrix[mini, minj])
                 {
-                    minE = matrix[i, j];
-                    min = j;
+                    mini = i;
+                    minj = j;
                 }
             }
         }
-        Console.WriteLine(max + " " + min);
+        int max = Math.Max(maxj, minj);
+        int min = Math.Min(maxj, minj);
         RemoveColumn(ref matrix, max);
-        if(max!=min)
+        if (max != min)
             RemoveColumn(ref matrix, min);
-        PrintMatrix(matrix);
-        // end
     }
     void RemoveColumn(ref int[,] matrix, int columnIndex)
     {
         int[,] ans = new int[matrix.GetLength(0), matrix.GetLength(1) - 1];
         for (int j = 0; j < columnIndex; j++)
+        {
             for (int i = 0; i < matrix.GetLength(0); i++)
+            {
                 ans[i, j] = matrix[i, j];
+            }
+        }
         for (int j = columnIndex; j < ans.GetLength(1); j++)
+        {
             for (int i = 0; i < matrix.GetLength(0); i++)
+            {
                 ans[i, j] = matrix[i, j + 1];
+            }
+        }
         matrix = ans;
     }
     public void Task_2_11(int[,] A, int[,] B)
