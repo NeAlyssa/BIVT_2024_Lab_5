@@ -370,55 +370,6 @@ public class Program
 
     }*/
 
-    public double sm1(double x)
-    {
-        int n = 34;
-        double s = 1;
-        for (int i = 1; i < n; i++)
-        {
-            s += Math.Cos(i * x) / (fk(i));
-        }
-        return s;
-    }
-    public double sm2(double x)
-    {
-        int n = 1000;
-        double s = 0;
-        for (int i = 1; i < n; i++)
-        {
-            if (i % 2 == 0)
-                s += Math.Cos(i * x) / (i * i);
-            else
-                s -= Math.Cos(i * x) / (i * i);
-        }
-        return s;
-    }
-
-    public double Fy1(double x)
-    { 
-        return Math.Exp(Math.Cos(x))*Math.Cos(Math.Sin(x));
-    }
-    public double Fy2(double x)
-    {
-        return (x * x - (Math.PI * Math.PI / 3)) / 4;
-    }
-
-    public delegate double SumDelegate(double x);
-    public delegate double YDelegate(double x);
-
-    public double[,] func_3_1(double a, double b, double h, SumDelegate SmDg, YDelegate Yfn)
-    {
-        int ansind = 0;
-        double[,] sp = new double [(int)Math.Round((b-a)/h+1, 0),2];
-        for (double x = a;x <= b+h/2; x += h, ansind++)
-        { 
-            sp[ansind, 0] = SmDg(x);
-            sp[ansind, 1] = Yfn(x);
-        }
-        return sp;
-
-    }
-
     #region Level 1
     public long Task_1_1(int n, int k)
     {
@@ -897,6 +848,59 @@ public class Program
     }
     #endregion
 
+    public double sm1(double x)
+    {
+        double s = 1;
+        for (int i = 1; ; i++)
+        {
+            if (Math.Abs(Math.Cos(i * x) / (fk(i))) <= 0.0001)
+                break;
+            s += Math.Cos(i * x) / (fk(i));
+        }
+        return s;
+    }
+    public double sm2(double x)
+    {
+        double s = 0;
+        for (int i = 1;; i++)
+        {
+            if (Math.Abs(Math.Cos(i * x) / (i * i)) <= 0.0001)
+                break;
+            if (i % 2 == 0)
+                s += Math.Cos(i * x) / (i * i);
+            else
+                s -= Math.Cos(i * x) / (i * i);
+        }
+        return s;
+    }
+
+
+
+    public double Fy1(double x)
+    {
+        return Math.Exp(Math.Cos(x)) * Math.Cos(Math.Sin(x));
+    }
+    public double Fy2(double x)
+    {
+        return (x * x - (Math.PI * Math.PI / 3)) / 4;
+    }
+
+    public delegate double SumDelegate(double x);
+    public delegate double YDelegate(double x);
+
+    public double[,] func_3_1(double a, double b, double h, SumDelegate SmDg, YDelegate Yfn)
+    {
+        int ansind = 0;
+        double[,] sp = new double[(int)Math.Round((b - a) / h + 1, 0), 2];
+        for (double x = a; x <= b + h / 2; x += h, ansind++)
+        {
+            sp[ansind, 0] = SmDg(x);
+            sp[ansind, 1] = Yfn(x);
+        }
+        return sp;
+
+    }
+
     #region Level 3
     public void Task_3_1(ref double[,] firstSumAndY, ref double[,] secondSumAndY)
     {
@@ -904,6 +908,21 @@ public class Program
         //double[,] ans1 = new double[, 4];
         //Console.WriteLine(111);
         firstSumAndY = func_3_1(0.1, 1, 0.1, sm1, Fy1);
+
+        /*double[,] answerA = new double[10, 2] {
+            { 2.691248985686179, 2.691268139166703 },
+                { 2.612188250758326, 2.6122204929844544 },
+                { 2.486877948066567, 2.486856868603152 },
+                { 2.3239116638734316, 2.3238842457941966 },
+                { 2.133946805639821, 2.133930111437405 },
+                { 1.9284273029461472, 1.9283342378052784 },
+                { 1.7179407535719313, 1.7179999609519054 },
+                { 1.5124407582589756, 1.5124670047163078 },
+                { 1.3192885674454282, 1.3193027107322826 },
+                { 1.1438419924605645, 1.1438356437916406 }
+        };
+        firstSumAndY = answerA;*/
+
         Console.WriteLine();
         PrintMatrix(firstSumAndY);
         secondSumAndY = func_3_1(Math.PI / 5, Math.PI, Math.PI / 25, sm2, Fy2);
@@ -1038,11 +1057,20 @@ public class Program
     public int CharacterCounter(double[] arr)
     {
         int count = 0;
-        for (int i = 1; i < arr.Length; i++)
+        int l = 0;
+        for (int i = 0; i < arr.Length; i++)
         {
-            if ((arr[i] > 0 && arr[i - 1] < 0) || (arr[i] < 0 && arr[i - 1] > 0))
+            if (arr[i] < 0)
             {
-                count += 1;
+                if (l > 0)
+                    count += 1;
+                l = -1;
+            }
+            else if (arr[i] > 0)
+            {
+                if (l < 0)
+                    count += 1;
+                l = 1;
             }
         }
         return count;
@@ -1058,8 +1086,8 @@ public class Program
             Console.Write(p1[i] + " ");
 
         Console.WriteLine();
-        for (int i = 0; i < p1.Length; i++)
-            Console.Write(p1[i] + " ");
+        for (int i = 0; i < p2.Length; i++)
+            Console.Write(p2[i] + " ");
 
         func1 = CharacterCounter(func_3_5(0, 2, 0.1, YFunction1_3_5));
         func2 = CharacterCounter(func_3_5(-1, 1, 0.2, YFunction2_3_5));
