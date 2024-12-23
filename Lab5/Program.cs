@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.Intrinsics.X86;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -15,14 +16,16 @@ public class Program
     public static void Main()
     {
         Program program = new Program();
-        int[,] matrix5x5 = new int[,] {
-            { 1, 2, 3, 4, 5 },
-            { 6, 7, 8, 9, 10 },
-            { 11, 12, 13, 14, 15 },
-            { -1, -2, -3, -4, -5 },
-            { 6, 7, 8, 9, 0 }};
-        program.Task_2_10(ref matrix5x5);
+        int[,] matrix5x6 = new int[,] {
+            { 1, 2, 3, 4, 5, -1 },
+            { 6, 7, 8, 9, 10, -2 },
+            { 11, 12, 13, 14, 15, -3 },
+            { -1, -2, -3, -4, -5, -1 },
+            { 6, 7, 8, 9, 0, -2 }};
+        program.Task_3_2(matrix5x6);
+        program.printM(matrix5x6);
     }
+
 
     void printM(int[,] m)
     {
@@ -816,7 +819,30 @@ public class Program
 
         // create and use FindSequence(array, A, B); // 1 - increasing, 0 - no sequence,  -1 - decreasing
         // A and B - start and end indexes of elements from array for search
-
+        int FindSequence(int[] array, int A, int B)
+        {
+            bool inc = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] < array[i - 1])
+                {
+                    inc = false; break;
+                }
+            }
+            if (inc) return 1;
+            bool decr = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] > array[i - 1])
+                {
+                    decr = false; break;
+                }
+            }
+            if (decr) return -1;
+            return 0;
+        }
+        answerFirst = FindSequence(first, 0, first.Length - 1);
+        answerSecond = FindSequence(second, 0, second.Length - 1);
         // end
     }
 
@@ -826,7 +852,57 @@ public class Program
 
         // use FindSequence(array, A, B); from Task_2_28a or entirely Task_2_28a
         // A and B - start and end indexes of elements from array for search
-
+        int FindSequence(int[] array, int A, int B)
+        {
+            bool inc = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] < array[i - 1])
+                {
+                    inc = false; break;
+                }
+            }
+            if (inc) return 1;
+            bool decr = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] > array[i - 1])
+                {
+                    decr = false; break;
+                }
+            }
+            if (decr) return -1;
+            return 0;
+        }
+        int[,] FindMonotony(int[] array, int A, int B)
+        {
+            int len = 0;
+            for (int i =A; i<=B; i++)
+            {
+                for (int j = i + 1; j<=B; j++)
+                {
+                    if (FindSequence(array, i, j) != 0)
+                    {
+                        len++;
+                    }
+                }
+            }
+            int[,] matrix = new int[len, 2];
+            int cnt = 0;
+            for (int i = A; i <= B; i++)
+            {
+                for (int j = i + 1; j <= B; j++)
+                {
+                    if (FindSequence(array, i, j) != 0)
+                    {
+                        matrix[cnt, 0] = i; matrix[cnt, 1] = j; cnt++;
+                    }
+                }
+            }
+            return matrix;
+        }
+        answerFirst = FindMonotony(first, 0, first.Length - 1);
+        answerSecond = FindMonotony(second, 0, second.Length - 1);
         // end
     }
 
@@ -836,7 +912,74 @@ public class Program
 
         // use FindSequence(array, A, B); from Task_2_28a or entirely Task_2_28a or Task_2_28b
         // A and B - start and end indexes of elements from array for search
-
+        int FindSequence(int[] array, int A, int B)
+        {
+            bool inc = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] < array[i - 1])
+                {
+                    inc = false; break;
+                }
+            }
+            if (inc) return 1;
+            bool decr = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] > array[i - 1])
+                {
+                    decr = false; break;
+                }
+            }
+            if (decr) return -1;
+            return 0;
+        }
+        int[,] FindMonotony(int[] array, int A, int B)
+        {
+            int len = 0;
+            for (int i = A; i <= B; i++)
+            {
+                for (int j = i + 1; j <= B; j++)
+                {
+                    if (FindSequence(array, i, j) != 0)
+                    {
+                        len++;
+                    }
+                }
+            }
+            int[,] matrix = new int[len, 2];
+            int cnt = 0;
+            for (int i = A; i <= B; i++)
+            {
+                for (int j = i + 1; j <= B; j++)
+                {
+                    if (FindSequence(array, i, j) != 0)
+                    {
+                        matrix[cnt, 0] = i; matrix[cnt, 1] = j; cnt++;
+                    }
+                }
+            }
+            return matrix;
+        }
+        int[] FindLongestMon(int[] arr)
+        {
+            int[,] mon = FindMonotony(arr, 0, arr.Length - 1);
+            int len = -1;
+            int l = 0, r = 0;
+            for (int i = 0; i < mon.GetLength(0); i++)
+            {
+                if (len < Math.Abs(mon[i,0] - mon[i,1]))
+                {
+                    len = Math.Abs(mon[i,1] - mon[i,0]);
+                    l = mon[i, 0]; r = mon[i, 1];
+                }
+            }
+            int[] ret = new int[] { l, r};
+            return ret;
+        }
+        answerFirst = FindLongestMon(first);
+        answerSecond = FindLongestMon(second);
+        
         // end
     }
     #endregion
@@ -853,16 +996,55 @@ public class Program
         // end
     }
 
+    public delegate void SortRowStyle(int[,] matrix, int index);
     public void Task_3_2(int[,] matrix)
     {
-        // SortRowStyle sortStyle = default(SortRowStyle); - uncomment me
+        //SortRowStyle sortStyle = default(SortRowStyle); - uncomment me
 
         // code here
 
         // create and use public delegate SortRowStyle(matrix, rowIndex);
         // create and use methods SortAscending(matrix, rowIndex) and SortDescending(matrix, rowIndex)
         // change method in variable sortStyle in the loop here and use it for row sorting
-
+        void SortAscending(int[,] A, int index)
+        {
+            int n = A.GetLength(1);
+            for (int i =0; i<n; i++)
+            {
+                for (int j = 1; j < n - i; j++)
+                {
+                    if (A[index, j] < A[index, j - 1])
+                    {
+                        (A[index, j], A[index, j - 1]) = (A[index, j - 1], A[index, j]);
+                    }
+                }
+            }
+        }
+        void SortDescending(int[,] A, int index)
+        {
+            int n = A.GetLength(1);
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 1; j < n - i; j++)
+                {
+                    if (A[index, j] > A[index, j - 1])
+                    {
+                        (A[index, j], A[index, j - 1]) = (A[index, j - 1], A[index, j]);
+                    }
+                }
+            }
+        }
+        void SortingMatrix(int[,] A)
+        {
+            int n = A.GetLength(0);
+            for (int i =0; i<n; i++)
+            {
+                SortRowStyle sort;
+                sort = (i % 2 == 0 ? SortAscending : SortDescending);
+                sort(matrix, i);
+            }
+        }
+        SortingMatrix(matrix);
         // end
     }
 
@@ -883,6 +1065,7 @@ public class Program
         return answer;
     }
 
+    public delegate int[] GetTringle(int[,] matrix);
     public int Task_3_4(int[,] matrix, bool isUpperTriangle)
     {
         int answer = 0;
@@ -892,9 +1075,48 @@ public class Program
         // create and use public delegate GetTriangle(matrix);
         // create and use methods GetUpperTriange(array) and GetLowerTriange(array)
         // create and use GetSum(GetTriangle, matrix)
-
+        int[] GetUpperTringle(int[,] matrix)
+        {
+            int n = matrix.GetLength(0), m = matrix.GetLength(1);
+            int[] ret = new int[(n * n) / 2 + n];
+            int cnt = 0;
+            for (int i =0; i<n; i++)
+            {
+                for (int j = i; j < m; j++)
+                {
+                    ret[cnt++] = matrix[i, j];
+                }
+            }
+            return ret;
+        }
+        int[] GetLowerTringle(int[,] matrix)
+        {
+            int n = matrix.GetLength(0), m = matrix.GetLength(1);
+            int[] ret = new int[(n * n) / 2 + n];
+            int cnt = 0;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j <= i; j++)
+                {
+                    ret[cnt++] = matrix[i, j];
+                }
+            }
+            return ret;
+        }
+        int GetSum(int[,] matrix)
+        {
+            GetTringle tringle;
+            tringle = (isUpperTriangle ? GetUpperTringle : GetLowerTringle);
+            int[] a = tringle(matrix);
+            int ret = 0;
+            foreach (int i in a)
+            {
+                ret+= i*i;
+            }
+            return ret;
+        }
         // end
-
+        answer = GetSum(matrix);
         return answer;
     }
 
@@ -912,6 +1134,7 @@ public class Program
         // end
     }
 
+    public delegate int FindElement(int[,] m);
     public void Task_3_6(int[,] matrix)
     {
         // code here
@@ -920,7 +1143,40 @@ public class Program
         // use method FindDiagonalMaxIndex(matrix) like in Task_2_3;
         // create and use method FindFirstRowMaxIndex(matrix);
         // create and use method SwapColumns(matrix, FindDiagonalMaxIndex, FindFirstRowMaxIndex);
-
+        int FindDiagonalMaxIndex(int[,] matrix)
+        {
+            int res = 0, mx = -10000000;
+            for (int i = 0, j = 0; i < matrix.GetLength(0); i++, j++)
+            {
+                if (mx < matrix[i, j])
+                {
+                    res = j; mx = matrix[i, j];
+                }
+            }
+            return res;
+        }
+        int FindFirstRowMaxIndex(int[,] matrix)
+        {
+            int res = 0, mx = -10000000;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                if (mx < matrix[0, i])
+                {
+                    res = i; mx = matrix[0, i];
+                }
+            }
+            return res;
+        }
+        void SwapColumns(int[,] matrix, FindElement findElementDiag, FindElement findElementRow)
+        {
+            int n = matrix.GetLength(0);
+            int c1 = findElementDiag(matrix), c2 = findElementRow(matrix);
+            for (int i = 0; i<n; i++)
+            {
+                (matrix[i, c1], matrix[i, c2]) = (matrix[i, c2], matrix[i, c1]);
+            }
+        }
+        SwapColumns(matrix, FindDiagonalMaxIndex, FindFirstRowMaxIndex);
         // end
     }
 
