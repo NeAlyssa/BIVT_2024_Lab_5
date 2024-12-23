@@ -359,12 +359,12 @@ public class Program
         return answer;
     }
 
+    public delegate (int, int) FindIndex(int[,] m);
     public void Task_2_10(ref int[,] matrix)
     {
         // code here
 
         // create and use RemoveColumn(matrix, columnIndex);
-        printM(matrix);
         (int, int) FindDiagonalMaxIndex(int[,] matrix)
         {
             int mx = -1000000000, row = 0, col = 0;
@@ -416,7 +416,8 @@ public class Program
             matrix = mat;
         }
         int row1,col1,row2,col2;
-        (row1,col1) = FindDiagonalMaxIndex(matrix); (row2,col2) = FindDiagonalMinIndex(matrix);
+        FindIndex DiagMax = FindDiagonalMaxIndex, DiagMin = FindDiagonalMinIndex;
+        (row1,col1) = DiagMax(matrix); (row2,col2) = DiagMin(matrix);
         if (col1 > col2)
         {
             (col1, col2) = (col2, col1);
@@ -662,6 +663,7 @@ public class Program
         // end
     }
 
+    public delegate int Count(int[,] m, int i);
     public void Task_2_22(int[,] matrix, out int[] rows, out int[] cols)
     {
         rows = new int[matrix.GetLength(0)];
@@ -695,13 +697,14 @@ public class Program
             }
             return mx;
         }
+        Count Neg = CountNegativeInRow, MaxNeg = FindMaxNegativePerColumn;
         for (int i =0; i<matrix.GetLength(0); i++)
         {
-            rows[i] = CountNegativeInRow(matrix, i);
+            rows[i] = Neg(matrix, i);
         }
         for (int i = 0; i < matrix.GetLength(1); i++)
         {
-            cols[i] = FindMaxNegativePerColumn(matrix, i);
+            cols[i] = MaxNeg(matrix, i);
         }
         // end
     }
@@ -813,6 +816,7 @@ public class Program
         // end
     }
 
+    delegate int FindSeq(int[] arr, int A, int B);
     public void Task_2_28a(int[] first, int[] second, ref int answerFirst, ref int answerSecond)
     {
         // code here
@@ -841,11 +845,13 @@ public class Program
             if (decr) return -1;
             return 0;
         }
-        answerFirst = FindSequence(first, 0, first.Length - 1);
-        answerSecond = FindSequence(second, 0, second.Length - 1);
+        FindSeq F = FindSequence;
+        answerFirst = F(first, 0, first.Length - 1);
+        answerSecond = F(second, 0, second.Length - 1);
         // end
     }
 
+    public delegate int[,] FindMonot(int[] arr, int A, int B);
     public void Task_2_28b(int[] first, int[] second, ref int[,] answerFirst, ref int[,] answerSecond)
     {
         // code here
@@ -876,12 +882,13 @@ public class Program
         }
         int[,] FindMonotony(int[] array, int A, int B)
         {
+            FindSeq F = FindSequence;
             int len = 0;
             for (int i =A; i<=B; i++)
             {
                 for (int j = i + 1; j<=B; j++)
                 {
-                    if (FindSequence(array, i, j) != 0)
+                    if (F(array, i, j) != 0)
                     {
                         len++;
                     }
@@ -893,7 +900,7 @@ public class Program
             {
                 for (int j = i + 1; j <= B; j++)
                 {
-                    if (FindSequence(array, i, j) != 0)
+                    if (F(array, i, j) != 0)
                     {
                         matrix[cnt, 0] = i; matrix[cnt, 1] = j; cnt++;
                     }
@@ -901,11 +908,13 @@ public class Program
             }
             return matrix;
         }
-        answerFirst = FindMonotony(first, 0, first.Length - 1);
-        answerSecond = FindMonotony(second, 0, second.Length - 1);
+        FindMonot F = FindMonotony;
+        answerFirst = F(first, 0, first.Length - 1);
+        answerSecond = F(second, 0, second.Length - 1);
         // end
     }
 
+    public delegate int[] FindLong(int[] arr);
     public void Task_2_28c(int[] first, int[] second, ref int[] answerFirst, ref int[] answerSecond)
     {
         // code here
@@ -936,12 +945,13 @@ public class Program
         }
         int[,] FindMonotony(int[] array, int A, int B)
         {
+            FindSeq F = FindSequence;
             int len = 0;
             for (int i = A; i <= B; i++)
             {
                 for (int j = i + 1; j <= B; j++)
                 {
-                    if (FindSequence(array, i, j) != 0)
+                    if (F(array, i, j) != 0)
                     {
                         len++;
                     }
@@ -953,7 +963,7 @@ public class Program
             {
                 for (int j = i + 1; j <= B; j++)
                 {
-                    if (FindSequence(array, i, j) != 0)
+                    if (F(array, i, j) != 0)
                     {
                         matrix[cnt, 0] = i; matrix[cnt, 1] = j; cnt++;
                     }
@@ -963,7 +973,8 @@ public class Program
         }
         int[] FindLongestMon(int[] arr)
         {
-            int[,] mon = FindMonotony(arr, 0, arr.Length - 1);
+            FindMonot F = FindMonotony;
+            int[,] mon = F(arr, 0, arr.Length - 1);
             int len = -1;
             int l = 0, r = 0;
             for (int i = 0; i < mon.GetLength(0); i++)
@@ -977,8 +988,9 @@ public class Program
             int[] ret = new int[] { l, r};
             return ret;
         }
-        answerFirst = FindLongestMon(first);
-        answerSecond = FindLongestMon(second);
+        FindLong F = FindLongestMon;
+        answerFirst = F(first);
+        answerSecond = F(second);
         
         // end
     }
@@ -1192,6 +1204,7 @@ public class Program
         // end
     }
 
+
     public void Task_3_10(ref int[,] matrix)
     {
         // FindIndex searchArea = default(FindIndex); - uncomment me
@@ -1203,6 +1216,68 @@ public class Program
         // create and use method FindMinAboveDiagonalIndex(matrix);
         // use RemoveColumn(matrix, columnIndex) from Task_2_10
         // create and use method RemoveColumns(matrix, findMaxBelowDiagonalIndex, findMinAboveDiagonalIndex)
+        (int, int) FindDiagonalMaxIndex(int[,] matrix)
+        {
+            int mx = -1000000000, row = 0, col = 0;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j <= i; j++)
+                {
+                    if (matrix[i, j] > mx)
+                    {
+                        mx = matrix[i, j]; row = i; col = j;
+                    }
+                }
+            }
+            return (row, col);
+        }
+        (int, int) FindDiagonalMinIndex(int[,] matrix)
+        {
+            int mx = -1000000000, row = 0, col = 0;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = i + 1; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] > mx)
+                    {
+                        mx = matrix[i, j]; row = i; col = j;
+                    }
+                }
+            }
+            return (row, col);
+        }
+        void RemoveColumn(ref int[,] matrix, int columnIndex)
+        {
+            int[,] mat = new int[matrix.GetLength(0), matrix.GetLength(1) - 1];
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    if (j == columnIndex) continue;
+                    if (j > columnIndex)
+                    {
+                        mat[i, j - 1] = matrix[i, j];
+                    }
+                    else
+                    {
+                        mat[i, j] = matrix[i, j];
+                    }
+                }
+            }
+            matrix = mat;
+        }
+        void RemoveColumns(ref int[,] matrix, FindIndex DiagMax, FindIndex DiagMin)
+        {
+            int row1, col1, row2, col2;
+            (row1, col1) = DiagMax(matrix); (row2, col2) = DiagMin(matrix);
+            if (col1 > col2)
+            {
+                (col1, col2) = (col2, col1);
+            }
+            RemoveColumn(ref matrix, col1); if (col1 != col2) RemoveColumn(ref matrix, col2 - 1);
+        }
+        RemoveColumns(ref matrix, FindDiagonalMaxIndex, FindDiagonalMinIndex);
+        printM(matrix);
 
         // end
     }
@@ -1217,11 +1292,12 @@ public class Program
         // end
     }
 
+    public delegate int[] GetNegativeArray(int[,] matrix);
     public void Task_3_22(int[,] matrix, out int[] rows, out int[] cols)
     {
 
-        rows = null;
-        cols = null;
+        rows = new int[matrix.GetLength(0)];
+        cols = new int[matrix.GetLength(1)];
 
         // code here
 
@@ -1229,6 +1305,57 @@ public class Program
         // use GetNegativeCountPerRow(matrix) from Task_2_22
         // use GetMaxNegativePerColumn(matrix) from Task_2_22
         // create and use method FindNegatives(matrix, searcherRows, searcherCols, out rows, out cols);
+        int CountNegativeInRow(int[,] matrix, int rowIndex)
+        {
+            int cnt = 0;
+            for (int i = 0; i < matrix.GetLength(1); i++)
+            {
+                if (matrix[rowIndex, i] < 0)
+                {
+                    cnt++;
+                }
+            }
+            return cnt;
+        }
+        int FindMaxNegativePerColumn(int[,] matrix, int colIndex)
+        {
+            int mx = -1000000000;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                if (mx < matrix[i, colIndex] && matrix[i, colIndex] < 0)
+                {
+                    mx = matrix[i, colIndex];
+                }
+            }
+            return mx;
+        }
+        int[] searcherRows(int[,] matrix)
+        {
+            int[] rows = new int[matrix.GetLength(0)];
+            Count Neg = CountNegativeInRow;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                rows[i] = Neg(matrix, i);
+            }
+            return rows;
+        }
+        int[] searcherCols(int[,] matrix)
+        {
+            int[] cols = new int[matrix.GetLength(1)];
+            Count Neg = FindMaxNegativePerColumn;
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                cols[i] = Neg(matrix, i);
+            }
+            return cols;
+        }
+        void FindNegatives(int[,] matrix, GetNegativeArray SR, GetNegativeArray SC, out int[] rows, out int[] cols)
+        {
+            rows = new int[matrix.GetLength(0)];
+            cols = new int[matrix.GetLength(1)];
+            rows = SR(matrix); cols = SC(matrix);
+        }
+        FindNegatives(matrix, searcherRows, searcherCols, out rows, out cols);
 
         // end
     }
@@ -1245,6 +1372,7 @@ public class Program
         // end
     }
 
+    public delegate int IsSequence(int[] array, int index1, int index2);
     public void Task_3_28a(int[] first, int[] second, ref int answerFirst, ref int answerSecond)
     {
         // code here
@@ -1253,10 +1381,45 @@ public class Program
         // create and use method FindIncreasingSequence(array, A, B); similar to FindSequence(array, A, B) in Task_2_28a
         // create and use method FindDecreasingSequence(array, A, B); similar to FindSequence(array, A, B) in Task_2_28a
         // create and use method DefineSequence(array, findIncreasingSequence, findDecreasingSequence);
-
+        int FindIncreasingSequence(int[] array, int A, int B)
+        {
+            bool inc = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] < array[i - 1])
+                {
+                    inc = false; break;
+                }
+            }
+            if (inc) return 1;
+            return 0;
+        }
+        int FindDecreasingSequence(int[] array, int A, int B)
+        {
+            bool decr = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] > array[i - 1])
+                {
+                    decr = false; break;
+                }
+            }
+            if (decr) return 1;
+            return 0;
+        }
+        int DefineSequence(int[] array, IsSequence A, IsSequence B)
+        {
+            int inc = A(array, 0, array.Length - 1), decr = B(array, 0, array.Length - 1);
+            if (inc == 0 && decr == 1) return -1;
+            if (inc == 1 && decr == 0) return 1;
+            return 0;
+        }
+        answerFirst = DefineSequence(first, FindIncreasingSequence, FindDecreasingSequence);
+        answerSecond = DefineSequence(second, FindIncreasingSequence, FindDecreasingSequence);
         // end
     }
 
+    public delegate int Sequence(int[] array, int A, int B);
     public void Task_3_28c(int[] first, int[] second, ref int[] answerFirstIncrease, ref int[] answerFirstDecrease, ref int[] answerSecondIncrease, ref int[] answerSecondDecrease)
     {
         // code here
@@ -1265,7 +1428,51 @@ public class Program
         // use method FindIncreasingSequence(array, A, B); from Task_3_28a
         // use method FindDecreasingSequence(array, A, B); from Task_3_28a
         // create and use method FindLongestSequence(array, sequence);
-
+        int FindIncreasingSequence(int[] array, int A, int B)
+        {
+            bool inc = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] < array[i - 1])
+                {
+                    inc = false; break;
+                }
+            }
+            if (inc) return 1;
+            return 0;
+        }
+        int FindDecreasingSequence(int[] array, int A, int B)
+        {
+            bool decr = true;
+            for (int i = A + 1; i <= B; i++)
+            {
+                if (array[i] > array[i - 1])
+                {
+                    decr = false; break;
+                }
+            }
+            if (decr) return 1;
+            return 0;
+        }
+        int[] FindLongestSequence(int[] arr, Sequence F)
+        {
+            int len = -1, l = 0, r = 0;
+            for (int i = 0; i < arr.Length; i++){
+                for(int j = i + 1; j < arr.Length; j++)
+                {
+                    if (F(arr, i, j) == 1 && j - i > len)
+                    {
+                        len = j - i; l = i; r = j;
+                    }
+                }
+            }
+            int[] ret = new int[] { l, r };
+            return ret;
+        }
+        answerFirstIncrease = FindLongestSequence(first, FindIncreasingSequence);
+        answerFirstDecrease = FindLongestSequence(first, FindDecreasingSequence);
+        answerSecondIncrease = FindLongestSequence(second, FindIncreasingSequence);
+        answerSecondDecrease = FindLongestSequence(second, FindDecreasingSequence);
         // end
     }
     #endregion
