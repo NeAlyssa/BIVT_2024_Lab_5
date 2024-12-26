@@ -166,6 +166,15 @@ public class Program
 
         return pos;
     }
+
+    public static void createNewArray(ref int[,] newArr, int[,] arr, int max) {
+        for (int i = 0; i < arr.GetLength(0); i++) {
+            if (i == max) continue;
+            for (int j = 0; j < arr.GetLength(1); j++) {
+                newArr[(i > max) ? i - 1 : i, j] = arr[i, j];
+            }
+        }
+    }
     public void Task_2_3(ref int[,] B, ref int[,] C)
     {
         int maxB = FindDiagonalMaxIndex(B);
@@ -174,19 +183,8 @@ public class Program
         int[,] newB = new int[4, 5];
         int[,] newC = new int[5, 6];
 
-        for (int i = 0; i < 5; i++) {
-            if (i == maxB) continue;
-            for (int j = 0; j < 5; j++) {
-                newB[(i > maxB) ? i - 1 : i, j] = B[i, j];
-            }
-        }
-
-        for (int i = 0; i < 6; i++) {
-            if (i == maxC) continue;
-            for (int j = 0; j < 6; j++) {
-                newC[(i > maxC) ? i - 1 : i, j] = C[i, j];
-            }
-        }
+        createNewArray(ref newB, B, maxB);
+        createNewArray(ref newC, C, maxC);
 
         B = newB;
         C = newC;
@@ -956,9 +954,11 @@ public class Program
         int maxRow = int.MinValue, maxCol = int.MinValue;
         int maxRowPos = 0, maxColPos = 0;
 
+        CountPositive counter = CountRowPositive;
+
         for (int i = 0; i < B.GetLength(0); i++)
         {
-            int count = CountRowPositive(B, i);
+            int count = counter(B, i);
             if (count > maxRow)
             {
                 maxRow = count;
@@ -966,9 +966,11 @@ public class Program
             }
         }
 
+        counter = CountColumnPositive;
+
         for (int j = 0; j < C.GetLength(1); j++)
         {
-            int count = CountColumnPositive(C, j);
+            int count = counter(C, j);
             if (count > maxCol)
             {
                 maxCol = count;
