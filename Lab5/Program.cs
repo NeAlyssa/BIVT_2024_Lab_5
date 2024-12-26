@@ -686,24 +686,22 @@ public class Program
         matrix[row, column] = 0;
     }
 
+
+    public static void ReplaceMaxElements(ref int[,] matrix) {
+        for (int i = 0; i < matrix.GetLength(0); i++) {
+            int index;
+            FindRowMaxIndex(matrix, i, out index);
+            if (i % 2 != 0) ReplaceMaxElementEven(ref matrix, i, index);
+            else ReplaceMaxElementOdd(ref matrix, i, index);
+        }
+    }
     public void Task_2_27(int[,] A, int[,] B)
     {
         int rowsA = A.GetLength(0), colsA = A.GetLength(1);
         int rowsB = B.GetLength(0), colsB = B.GetLength(1);
 
-        for (int i = 0; i < rowsA; i++) {
-            int index;
-            FindRowMaxIndex(A, i, out index);
-            if (i % 2 != 0) ReplaceMaxElementEven(ref A, i, index);
-            else ReplaceMaxElementOdd(ref A, i, index);
-        }
-
-        for (int i = 0; i < rowsB; i++) {
-            int index;
-            FindRowMaxIndex(B, i, out index);
-            if (i % 2 != 0) ReplaceMaxElementEven(ref B, i, index);
-            else ReplaceMaxElementOdd(ref B, i, index);
-        }
+        ReplaceMaxElements(ref A);
+        ReplaceMaxElements(ref B);
     }
 
     public void Task_2_28a(int[] first, int[] second, ref int answerFirst, ref int answerSecond)
