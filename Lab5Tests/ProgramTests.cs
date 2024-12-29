@@ -28,7 +28,7 @@ namespace Tests
         int[,] matrix3x5 = new int[,] {
             { 1, 2, 3, 4, 5 },
             { 6, 7, 8, 9, 10 },
-            { 11, 12, 13, 14, 15 } };
+            { 11, 12, 13, 14, 10 } };
         int[,] matrix4x5 = new int[,] {
             { 1, 2, 3, 4, 5 },
             { 6, 7, 8, 9, 10 },
@@ -95,7 +95,7 @@ namespace Tests
             long actual, expected = 1;
             // Act
             actual = main.Task_1_1(n, k);
-            if (k == 0 || k == n) expected = 1;
+            if (k == 0 || k > 0 && k == n) expected = 1;
             else if (k > 0 && k < n)
             {
                 do
@@ -1412,7 +1412,7 @@ namespace Tests
             int[,] A = new int[5, 5], B = new int[6, 6];
             Array.Copy(matrix5x5, A, A.LongLength);
             Array.Copy(matrix6x6, B, B.LongLength);
-            int answerAu = 45, answerAl = 40, answerBu = 44, answerBl = 49;
+            int answerAu = 980, answerAl = 780, answerBu = 1424, answerBl = 1250;
             int resultAu = 0, resultAl = 0, resultBu = 0, resultBl = 0;
             // Act
             resultAu = main.Task_3_4(A, true);
@@ -1430,7 +1430,7 @@ namespace Tests
         public void Task_3_5Test()
         {
             // Arrange
-            int answerA = 2, answerB = 1;
+            int answerA = 1, answerB = 1;
             // Act
             main.Task_3_5(out int resultA, out int resultB);
             // Assert
@@ -1687,6 +1687,7 @@ namespace Tests
             for (int i = 0; i < answerBd.Length; i++)
                 Assert.AreEqual(answerBd[i], resultBd[i]);
         }
+
         [TestMethod()]
         public void Task_4Test()
         {
@@ -1701,88 +1702,79 @@ namespace Tests
             {2, 2, 7, 2},
             {1, 3, 2, 8}};
             double[,] answerMatrixU = {
-            {2, 1, -1},
-            {0, -1.5, 1.5},
-            {0, 0, 3}};
+            {2,     1,  -1},
+            {0, -1.5,   1.5},
+            {0,     0,  3}};
             double[,] answerMatrixL = {
-            {3, 0, 0},
+            {3,     0,  0},
             {1.5, -1.5, 0},
-            {-1, 1, 2}};
-            double[,] answerMatrixD = {
-            {3, 0, 0},
-            {0, 1.73205081, 0},
-            {0, 0, -1.73205081}};
+            {-1,    1,  2}};
+            double[,] answerMatrixLD = {
+            {2,     0,  0},
+            {0, -1.5,   0},
+            {0,     0,  3}};
+            double[,] answerMatrixRD = {
+            {3,     0,  0},
+            {0, -1.5,   0},
+            {0,     0,  2}};
             double[,] answerMatrix2U = {
-            {5, 1, 2, 1},
-            {0, 5.8, 0, 0},
-            {0, 0, 5.75862069, 0},
-            {0, 0, 0, 6.32934132}};
+            {5, 1,      2,          1},
+            {0, 5.8,    1.6,        2.8},
+            {0, 0,      5.75862069, 0.82758621},
+            {0, 0,      0,          6.32934132}};
             double[,] answerMatrix2L = {
-            {4.38589, 0, 0, 0},
-            {0.28846, 4.63462, 0, 0},
-            {1.75, 1.25, 6.5, 0},
-            {1, 3, 2, 8}};
-            double[,] answerMatrix2D = {
-            {3.68246276, 1, 2, 1},
-            {0, 3.81689352, 0, 0},
-            {0, 0, 6.03054834, 0},
-            {0, 0, 0, 12.47009537}};
+            {4.38589,   0,      0,  0},
+            {0.28846,   4.63462, 0, 0},
+            {1.75,      1.25,   6.5, 0},
+            {1,         3,      2,   8}};
+            double[,] answerMatrix2LD = {
+            {5, 0,      0,          0},
+            {0, 5.8,    0,          0},
+            {0, 0,      5.7586206,  0},
+            {0, 0,      0,      6.32934132}};
+            double[,] answerMatrix2RD = {
+            {4.38589, 0,    0,  0},
+            {0,     4.63462, 0, 0},
+            {0,     0,      6.5, 0},
+            {0,     0,      0,  8}};
             // Act
-            var rand = new Random().Next(7);
-            switch (rand)
+            var rand = new Random().Next(10);
+            double[,] answer = matrix, output = matrix;
+            if (rand < 4)
             {
-                case 0:
-                    main.Task_4(matrix, 0); break;
-                case 1:
-                    main.Task_4(matrix, 1); break;
-                case 2:
-                    main.Task_4(matrix, 2); break;
-                case 3:
-                    main.Task_4(matrix2, 0); break;
-                case 4:
-                    main.Task_4(matrix2, 1); break;
-                case 5:
-                    main.Task_4(matrix2, 2); break;
+                output = main.Task_4(matrix, rand % 4);
             }
-            // Assert
+            else if (rand < 8)
+            {
+                answer = matrix2;
+                output = main.Task_4(matrix2, rand % 4);
+            }
 
-            Assert.AreEqual(matrix.GetLength(0), answerMatrixD.GetLength(0));
-            Assert.AreEqual(matrix.GetLength(1), answerMatrixD.GetLength(1));
-            Assert.AreEqual(matrix2.GetLength(0), answerMatrix2D.GetLength(0));
-            Assert.AreEqual(matrix2.GetLength(1), answerMatrix2D.GetLength(1));
+            // Assert
+            Assert.AreEqual(answer.GetLength(0), output.GetLength(0));
+            Assert.AreEqual(answer.GetLength(1), output.GetLength(1));
             switch (rand)
             {
                 case 0:
-                    for (int i = 0; i < matrix.GetLength(0); i++)
-                        for (int j = 0; j < matrix.GetLength(1); j++)
-                            Assert.AreEqual(answerMatrixU[i, j], matrix[i, j], 0.00005);
-                    break;
+                    answer = answerMatrixU; break;
                 case 1:
-                    for (int i = 0; i < matrix.GetLength(0); i++)
-                        for (int j = 0; j < matrix.GetLength(1); j++)
-                            Assert.AreEqual(answerMatrixL[i, j], matrix[i, j], 0.00005);
-                    break;
+                    answer = answerMatrixL; break;
                 case 2:
-                    for (int i = 0; i < matrix.GetLength(0); i++)
-                        for (int j = 0; j < matrix.GetLength(1); j++)
-                            Assert.AreEqual(answerMatrixD[i, j], matrix[i, j], 0.00005);
-                    break;
+                    answer = answerMatrixLD; break;
                 case 3:
-                    for (int i = 0; i < matrix2.GetLength(0); i++)
-                        for (int j = 0; j < matrix2.GetLength(1); j++)
-                            Assert.AreEqual(answerMatrix2U[i, j], matrix2[i, j], 0.00005);
-                    break;
+                    answer = answerMatrixRD; break;
                 case 4:
-                    for (int i = 0; i < matrix2.GetLength(0); i++)
-                        for (int j = 0; j < matrix2.GetLength(1); j++)
-                            Assert.AreEqual(answerMatrix2L[i, j], matrix2[i, j], 0.00005);
-                    break;
+                    answer = answerMatrix2U; break;
                 case 5:
-                    for (int i = 0; i < matrix2.GetLength(0); i++)
-                        for (int j = 0; j < matrix2.GetLength(1); j++)
-                            Assert.AreEqual(answerMatrix2D[i, j], matrix2[i, j], 0.00005);
-                    break;
+                    answer = answerMatrix2L; break;
+                case 6:
+                    answer = answerMatrix2LD; break;
+                case 7:
+                    answer = answerMatrix2RD; break;
             }
+            for (int i = 0; i < output.GetLength(0); i++)
+                for (int j = 0; j < output.GetLength(1); j++)
+                    Assert.AreEqual(answer[i, j], output[i, j], 0.00005);
         }
 
     }
